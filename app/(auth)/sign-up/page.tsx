@@ -7,8 +7,13 @@ import SelectField from "@/components/forms/SelectField";
 import {INVESTMENT_GOALS, PREFERRED_INDUSTRIES, RISK_TOLERANCE_OPTIONS} from "@/lib/constants";
 import {CountrySelectField} from "@/components/forms/CountrySelectField";
 import FooterLink from "@/components/forms/FooterLink";
+import {useRouter} from "next/navigation";
+import {signUpWithEmail} from "@/lib/actions/auth.actions";
+import {toast} from "sonner";
+
 
 const SignUp = () => {
+    const router = useRouter()
     const {
         handleSubmit,
         register,
@@ -26,11 +31,21 @@ const SignUp = () => {
         },
         mode: 'onBlur'
     });
-    const onSubmit = async (data:SignUpFormData) => {
+    const onSubmit = async (data: SignUpFormData) => {
         try {
-            console.log(data)
+            const result = await signUpWithEmail(data);
+            if (result.success) {
+                router.push('/');
+            } else {
+                toast.error('Sign up failed.', {
+                    description: result.error || 'Failed to create an account'
+                });
+            }
         } catch (e) {
             console.error(e);
+            toast.error('Sign up failed.', {
+                description: e instanceof Error ? e.message : 'Failed to create an account'
+            });
         }
     }
 
@@ -55,7 +70,13 @@ const SignUp = () => {
                     placeholder="contact@gmail.com"
                     register={register}
                     error={errors.email}
-                    validation={{ required: 'Email address is required', pattern: /^\w+@\w+$/, message: 'Email address is required' }}
+                    validation={{
+                        required: 'Email address is required',
+                        pattern: {
+                            value: /^\S+@\S+\.\S+$/,
+                            message: 'Enter a valid email address'
+                        }
+                    }}
                 />
 
                 <InputField
@@ -108,7 +129,7 @@ const SignUp = () => {
                 />
 
                 <Button type="submit" disabled={isSubmitting} className="yellow-btn w-full mt-5">
-                    {isSubmitting ? 'Create account' : 'Start your investing journey'}
+                    {isSubmitting ? 'Creating account...' : 'Start your investing journey'}
                 </Button>
                 
                 <FooterLink text="Already have an account" linkText="Sign in" href="/sign-in" />
