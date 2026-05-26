@@ -1,21 +1,21 @@
 import nodemailer from 'nodemailer';
-import {WELCOME_EMAIL_TEMPLATE,NEWS_SUMMARY_EMAIL_TEMPLATE} from "@/lib/nodemailer/templates";
+import {WELCOME_EMAIL_TEMPLATE, NEWS_SUMMARY_EMAIL_TEMPLATE} from "@/lib/nodemailer/templates";
 
 export const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.NODEMAIL_EMAIL!,
-        pass: process.env.NODEMAIL_PASSWORD!,
+        user: process.env.NODEEMAILER_EMAIL!,
+        pass: process.env.NODEEMAILER_PASSWORD!,
     }
 })
 
-export const sendWelcomeEmail = async ({ email, name, intro} : WelcomeEmailData) =>{
+export const sendWelcomeEmail = async ({ email, name, intro }: WelcomeEmailData) => {
     const htmlTemplate = WELCOME_EMAIL_TEMPLATE
-        .replace('{{name}}' , name)
+        .replace('{{name}}', name)
         .replace('{{intro}}', intro);
 
     const mailOptions = {
-        from: `Stockly <stockly@anju.pro>`,
+        from: `Stockly <${process.env.NODEEMAILER_EMAIL}>`,
         to: email,
         subject: `Welcome to Stockly - your stock market toolkit is ready!`,
         text: 'Thanks for joining Stockly',
@@ -33,10 +33,10 @@ export const sendNewsSummaryEmail = async (
         .replace('{{newsContent}}', newsContent);
 
     const mailOptions = {
-        from: `"Signalist News" <signalist@jsmastery.pro>`,
+        from: `"Stockly News" <${process.env.NODEEMAILER_EMAIL}>`,
         to: email,
         subject: `📈 Market News Summary Today - ${date}`,
-        text: `Today's market news summary from Signalist`,
+        text: `Today's market news summary from Stockly`,
         html: htmlTemplate,
     };
 
