@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { CommandDialog, CommandEmpty, CommandInput, CommandList } from "@/components/ui/command"
+import { CommandDialog, CommandEmpty, CommandInput, CommandList, Command } from "@/components/ui/command"
 import {Button} from "@/components/ui/button";
 import {Loader2,  TrendingUp} from "lucide-react";
 import Link from "next/link";
@@ -66,6 +66,7 @@ export default function SearchCommand({ renderAs = 'button', label = 'Add stock'
                 </Button>
             )}
             <CommandDialog open={open} onOpenChange={setOpen} className="search-dialog">
+                <Command>
                 <div className="search-field">
                     <CommandInput value={searchTerm} onValueChange={setSearchTerm} placeholder="Search stocks..." className="search-input" />
                     {loading && <Loader2 className="search-loader" />}
@@ -84,7 +85,7 @@ export default function SearchCommand({ renderAs = 'button', label = 'Add stock'
                                 {` `}({displayStocks?.length || 0})
                             </div>
                             {displayStocks?.map((stock, i) => (
-                                <li key={stock.symbol} className="search-item">
+                                <li key={`${stock.symbol}-${i}`} className="search-item">
                                     <Link
                                         href={`/stocks/${stock.symbol}`}
                                         onClick={handleSelectStock}
@@ -107,6 +108,7 @@ export default function SearchCommand({ renderAs = 'button', label = 'Add stock'
                     )
                     }
                 </CommandList>
+                </Command>
             </CommandDialog>
         </>
     )
